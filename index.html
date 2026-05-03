@@ -3,46 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title> 결제안내 (신한)</title>
+    <title>결제안내 (신한)</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; background-color: #f4f1ea; font-family: 'Apple SD Gothic Neo', sans-serif; overflow: hidden; }
-        .wrapper { display: flex; flex-direction: column; height: 100vh; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box; }
+        /* 기본 레이아웃 설정 */
+        body, html { margin: 0; padding: 0; min-height: 100%; background-color: #ffffff; font-family: 'Apple SD Gothic Neo', sans-serif; }
+        .wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; box-sizing: border-box; }
+        
+        /* 이미지 전시 영역 - 정사각형 드로잉 이미지에 최적화 */
         .card-display {
-            width: 100%; max-width: 500px; aspect-ratio: 1024 / 637;
+            width: 100%; 
+            max-width: 400px; 
+            aspect-ratio: 1 / 1; /* 생성된 이미지 비율에 맞춤 */
             background: url('card.jpg') no-repeat center center;
-            background-size: cover; border-radius: 20px; box-shadow: 0 12px 40px rgba(0,0,0,0.15); margin-bottom: 40px;
+            background-size: contain; /* 이미지가 잘리지 않도록 전체 표시 */
+            margin-bottom: 30px;
         }
+
+        /* 신한은행 브랜드 컬러 적용된 버튼 */
         .copy-btn {
-            width: 100%; max-width: 350px; background-color: #0046ff; color: #fff;
-            border: none; padding: 20px; border-radius: 15px; font-size: 18px;
-            font-weight: bold; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 15px rgba(0, 70, 255, 0.3);
+            width: 100%; 
+            max-width: 350px; 
+            background-color: #0046ff; /* 신한 블루 */
+            color: #fff;
+            border: none; 
+            padding: 18px; 
+            border-radius: 12px; 
+            font-size: 17px;
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            box-shadow: 0 4px 12px rgba(0, 70, 255, 0.2);
         }
-        .copy-btn:active { background-color: #0035c2; transform: scale(0.95); }
-        .hint { margin-top: 20px; font-size: 14px; color: #8a7b6a; }
+        
+        .copy-btn:active { background-color: #0035c2; transform: scale(0.98); }
+        
+        .hint { margin-top: 15px; font-size: 13px; color: #666; }
+        
+        /* 계좌 정보 텍스트 안내 추가 (선택 사항) */
+        .account-info { margin-bottom: 10px; font-size: 18px; font-weight: 600; color: #333; }
     </style>
 </head>
 <body>
     <div class="wrapper">
+        <!-- 드로잉 이미지 영역 -->
         <div class="card-display"></div>
-        <button class="copy-btn" onclick="copyAccount()">신한은행 계좌번호 복사하기</button>
-        <div class="hint">버튼을 누르면 번호가 자동으로 복사됩니다.</div>
+        
+        <div class="account-info">신한은행 110-534-192942</div>
+        <button class="copy-btn" onclick="copyAccount()">계좌번호 복사하기</button>
+        <div class="hint">위 버튼을 누르면 번호가 클립보드에 복사됩니다.</div>
     </div>
+
     <script>
         function copyAccount() {
             var accountNumber = "110-534-192942"; 
+            
+            // 최신 브라우저를 위한 클립보드 API 사용
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(accountNumber).then(() => {
+                    alert("신한은행 계좌번호가 복사되었습니다!\n" + accountNumber);
+                }).catch(err => {
+                    fallbackCopy(accountNumber);
+                });
+            } else {
+                fallbackCopy(accountNumber);
+            }
+        }
+
+        // 구형 브라우저를 위한 백업 복사 방식
+        function fallbackCopy(text) {
             var textArea = document.createElement("textarea");
-            textArea.value = accountNumber;
-            textArea.style.position = "fixed";
-            textArea.style.left = "-9999px";
+            textArea.value = text;
             document.body.appendChild(textArea);
-            textArea.focus();
             textArea.select();
-            textArea.setSelectionRange(0, 9999);
             try {
                 document.execCommand('copy');
-                alert("신한은행 계좌번호가 복사되었습니다!\n" + accountNumber);
+                alert("계좌번호가 복사되었습니다.");
             } catch (err) {
-                alert("복사에 실패했습니다.");
+                alert("복사에 실패했습니다. 번호를 직접 입력해 주세요.");
             }
             document.body.removeChild(textArea);
         }
